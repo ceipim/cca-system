@@ -2,7 +2,7 @@ services:
   - type: web
     name: ccas-system
     env: node
-    buildCommand: npm install
+    buildCommand: npm install --build-fram-source
     startCommand: npm start
     healthCheckPath: /api/status
     envVars:
