@@ -178,7 +178,7 @@ async function executarGeracaoPDF(dados) {
   document.getElementById("boxPlacas").innerText = fmtCheck(dados.placas);
 
   var elemento = document.getElementById("documento-modelo");
-  elemento.style.backgroundImage = "url('" + TIMBRADO_BASE64 + "')";
+  elemento.style.backgroundImage = "url('" + TIMBRADO_URL + "')";
 
   var safeRazao = dados.razao.replace(/[^a-zA-Z0-9\s]/g, "").trim();
   var nomeArquivo = "CCA " + dados.numero + "_" + dados.ano + "_" + safeRazao + ".pdf";
