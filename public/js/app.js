@@ -191,14 +191,18 @@ async function executarGeracaoPDF(dados) {
     jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
   };
 
+  var printLayer = document.getElementById("print-layer");
+  var styleOrig = printLayer.getAttribute("style") || "";
+  printLayer.style.cssText = "position:fixed;top:0;left:0;z-index:-1";
+
   return new Promise(function (resolve, reject) {
     setTimeout(function () {
       html2pdf().set(opt).from(elemento).save().then(function () {
-        setTimeout(function () {
-          elemento.style.backgroundImage = "none";
-        }, 100);
+        printLayer.style.cssText = styleOrig;
+        elemento.style.backgroundImage = "none";
         resolve();
       }).catch(function (err) {
+        printLayer.style.cssText = styleOrig;
         elemento.style.backgroundImage = "none";
         reject(err);
       });
