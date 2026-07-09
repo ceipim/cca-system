@@ -6,7 +6,6 @@ const { getDb } = require("./database");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-// const HOST removed for Railway compatibility
 
 // Auto-seed na primeira execução (banco vazio)
 function autoSeed() {
