@@ -1,14 +1,13 @@
 var appState = {
   sigla: "GPIN/DCI/SEDEC",
-  secretario: "DARIO JOSÉ BRAGA PAIM",
-  gerente: "MARLON JOSÉ LIMA DUTRA",
-  setor: "Gerência de Projetos de Incentivos",
+  secretario: "DARIO JOSÃ‰ BRAGA PAIM",
+  gerente: "MARLON JOSÃ‰ LIMA DUTRA",
+  setor: "GerÃªncia de Projetos de Incentivos",
   contador: 24,
   ano: new Date().getFullYear(),
   historico: []
 };
 
-// === API ===
 var API = "/api";
 
 async function apiGet(path) {
@@ -39,7 +38,6 @@ async function apiDelete(path) {
   return r.json();
 }
 
-// === Inicialização ===
 async function inicializarSistema() {
   try {
     var st = await apiGet("/status");
@@ -50,7 +48,7 @@ async function inicializarSistema() {
     appState.contador = parseInt(st.contador, 10) || 1;
     appState.ano = parseInt(st.ano, 10) || new Date().getFullYear();
   } catch (e) {
-    console.warn("API indisponível, usando defaults");
+    console.warn("API indisponivel, usando defaults");
   }
 
   try {
@@ -98,7 +96,7 @@ async function salvarParametros() {
     carregarInterface();
     $("#modalParametros").modal("hide");
   } catch (e) {
-    alert("Erro ao salvar parâmetros");
+    alert("Erro ao salvar parametros");
   }
 }
 
@@ -113,7 +111,7 @@ function limparCampos() {
 
 async function processarEmissao() {
   var razao = document.getElementById("inputRazao").value;
-  if (!razao) { alert("Razão Social é obrigatória!"); return; }
+  if (!razao) { alert("Razao Social e obrigatoria!"); return; }
 
   var btn = document.getElementById("btnGerar");
   var originalText = btn.innerHTML;
@@ -132,6 +130,7 @@ async function processarEmissao() {
   try {
     var result = await apiPost("/emissions", dados);
 
+    dados.id = result.id;
     dados.numero = result.numero;
     dados.ano = result.ano;
     dados.secretarioSnapshot = appState.secretario;
@@ -139,13 +138,13 @@ async function processarEmissao() {
     dados.setorSnapshot = appState.setor;
     dados.siglaSnapshot = appState.sigla;
 
-    await executarGeracaoPDF(dados);
-
     appState.contador = result.numero + 1;
     document.getElementById("inputNumeroSeq").value = appState.contador;
 
     adicionarAoHistorico(dados);
     limparCampos();
+
+    await executarGeracaoPDF(dados);
 
     btn.disabled = false;
     btn.innerHTML = originalText;
@@ -158,9 +157,11 @@ async function processarEmissao() {
 }
 
 async function executarGeracaoPDF(dados) {
-  var meses = ["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+  var meses = ["janeiro","fevereiro","marco","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
   var hoje = new Date();
   var dataFormatada = hoje.getDate() + " de " + meses[hoje.getMonth()] + " de " + hoje.getFullYear();
+
+  var fmtCheck = function (v) { return (v === true || v === "x") ? "[x]" : "[ ]"; };
 
   document.getElementById("outRef").innerText = dados.numero + "/" + dados.ano;
   document.getElementById("outSigla").innerText = dados.siglaSnapshot || appState.sigla;
@@ -172,9 +173,9 @@ async function executarGeracaoPDF(dados) {
   document.getElementById("outAssNome").innerText = dados.gerenteSnapshot || appState.gerente;
   document.getElementById("outAssCargo").innerText = dados.setorSnapshot || appState.setor;
 
-  document.getElementById("boxFinal").innerText = dados.final === "x" ? "[x]" : "[ ]";
-  document.getElementById("boxIntermediario").innerText = dados.intermed === "x" ? "[x]" : "[ ]";
-  document.getElementById("boxPlacas").innerText = dados.placas === "x" ? "[x]" : "[ ]";
+  document.getElementById("boxFinal").innerText = fmtCheck(dados.final);
+  document.getElementById("boxIntermediario").innerText = fmtCheck(dados.intermed);
+  document.getElementById("boxPlacas").innerText = fmtCheck(dados.placas);
 
   var elemento = document.getElementById("documento-modelo");
   elemento.style.backgroundImage = "url('" + TIMBRADO_BASE64 + "')";
@@ -207,7 +208,7 @@ async function executarGeracaoPDF(dados) {
 
 function reimprimirItem(index) {
   var item = appState.historico[index];
-  executarGeracaoPDF(item).catch(function () { alert("Erro na reimpressão"); });
+  executarGeracaoPDF(item).catch(function () { alert("Erro na reimpressao"); });
 }
 
 function adicionarAoHistorico(dados) {
@@ -217,6 +218,7 @@ function adicionarAoHistorico(dados) {
   var dataStr = dia + "/" + mes;
 
   var novo = {
+    id: dados.id,
     numero: dados.numero,
     ano: dados.ano,
     data: dataStr,
@@ -275,7 +277,7 @@ async function removerItem(index) {
 }
 
 function exportarExcel() {
-  var csv = "\uFEFFNúmero;Ano;Data;CNPJ;Razão Social;Bem Final;Bem Intermed;Placas;SIGED\n";
+  var csv = "\uFEFFN\u00famero;Ano;Data;CNPJ;Raz\u00e3o Social;Bem Final;Bem Intermed;Placas;SIGED\n";
   appState.historico.forEach(function (i) {
     var f = (i.final === "SIM" || i.final === "x") ? "x" : "";
     var n = (i.intermed === "SIM" || i.intermed === "x") ? "x" : "";
@@ -296,7 +298,6 @@ function exportarExcel() {
   }
 }
 
-// Bootstrap + inicialização
 $(function () {
   inicializarSistema();
 });
