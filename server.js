@@ -37,5 +37,5 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/api", apiRoutes);
 
 app.listen(PORT, () => {
-  console.log(`\n  CCA System rodando em http://${HOST}:${PORT}\n`);
+  console.log(`\n  CCA System rodando na porta ${PORT}\n`);
 });
