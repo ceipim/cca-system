@@ -6,7 +6,7 @@ const { getDb } = require("./database");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const HOST = process.env.HOST || "0.0.0.0";
+// const HOST removed for Railway compatibility
 
 // Auto-seed na primeira execução (banco vazio)
 function autoSeed() {
@@ -37,6 +37,6 @@ app.use(express.json({ limit: "50mb" }));
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/api", apiRoutes);
 
-app.listen(PORT, HOST, () => {
+app.listen(PORT, () => {
   console.log(`\n  CCA System rodando em http://${HOST}:${PORT}\n`);
 });
